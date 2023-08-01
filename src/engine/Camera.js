@@ -1,8 +1,9 @@
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants/game.js';
 import {
-	SCROLL_BOUNDRY,
-	STAGE_HEIGHT,
-	STAGE_PADDING,
-	STAGE_WIDTH,
+   SCROLL_BOUNDRY,
+   STAGE_HEIGHT,
+   STAGE_PADDING,
+   STAGE_WIDTH,
 } from '../constants/stage.js';
 
 export class Camera {
@@ -11,7 +12,7 @@ export class Camera {
 		this.fighters = fighters;
 	}
 
-	update(time, context) {
+	update(_, context) {
 		this.position.y =
 			-6 +
 			Math.floor(
@@ -29,36 +30,32 @@ export class Camera {
 			this.fighters[0].position.x
 		);
 
-		if (highX - lowX > context.canvas.width - SCROLL_BOUNDRY * 2) {
+		if (highX - lowX > SCREEN_WIDTH - SCROLL_BOUNDRY * 2) {
 			const midPoint = (highX - lowX) / 2;
-			this.position.x = lowX + midPoint - context.canvas.width / 2;
+			this.position.x = lowX + midPoint - SCREEN_WIDTH / 2;
 		} else {
-			// Check if some player is into one of the camera boundries and if he is walking
+			// Check if some player is into one of the camera boundries
 			for (const fighter of this.fighters) {
-				if (
-					(fighter.position.x < this.position.x + SCROLL_BOUNDRY &&
-						fighter.velocity.x * fighter.direction < 0) ||
-					(fighter.position.x >
-						this.position.x + context.canvas.width - SCROLL_BOUNDRY &&
-						fighter.velocity.x * fighter.direction > 0)
+				if (fighter.position.x < this.position.x + SCROLL_BOUNDRY) {
+					this.position.x = fighter.position.x - SCROLL_BOUNDRY;
+				} else if (
+					fighter.position.x >
+					this.position.x + SCREEN_WIDTH - SCROLL_BOUNDRY
 				) {
-					this.position.x +=
-						fighter.velocity.x * fighter.direction * time.secondsPassed;
+					this.position.x =
+						fighter.position.x - SCREEN_WIDTH + SCROLL_BOUNDRY;
 				}
 			}
 		}
 
 		// Limit and block the camera to get out of the stage dimensions
 		if (this.position.x < STAGE_PADDING) this.position.x = STAGE_PADDING;
-		if (
-			this.position.x >
-			STAGE_WIDTH + STAGE_PADDING - context.canvas.width
-		) {
-			this.position.x = STAGE_WIDTH + STAGE_PADDING - context.canvas.width;
+		if (this.position.x > STAGE_WIDTH + STAGE_PADDING - SCREEN_WIDTH) {
+			this.position.x = STAGE_WIDTH + STAGE_PADDING - SCREEN_WIDTH;
 		}
 		if (this.position.y < 0) this.position.y = 0;
-		if (this.position.y > STAGE_HEIGHT - context.canvas.height) {
-			this.position.y = STAGE_HEIGHT - context.canvas.height;
+		if (this.position.y > STAGE_HEIGHT - SCREEN_HEIGHT) {
+			this.position.y = STAGE_HEIGHT - SCREEN_HEIGHT;
 		}
 	}
 }

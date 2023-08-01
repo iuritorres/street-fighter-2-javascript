@@ -3,6 +3,7 @@ import {
 	registerGamepadEvents,
 	registerKeyboardEvents,
 } from './engine/InputHandler.js';
+
 import { BattleScene } from './scenes/BattleScene.js';
 import { getContext } from './utils/context.js';
 

@@ -4,9 +4,12 @@ import {
 	FighterAttackStrength,
 	FighterId,
 } from '../constants/fighter.js';
-import { FRAME_TIME } from '../constants/game.js';
+
+import { FRAME_TIME, SCREEN_WIDTH } from '../constants/game.js';
 import { STAGE_MID_POINT, STAGE_PADDING } from '../constants/stage.js';
 import { Camera } from '../engine/Camera.js';
+import { EntityList } from '../engine/EntityList.js';
+import { pollControl } from '../engine/controlHistory.js';
 import { Ken, Ryu } from '../entities/fighters/index.js';
 
 import {
@@ -23,14 +26,15 @@ import { gameState } from '../state/gameState.js';
 
 export class BattleScene {
 	fighters = [];
-	camera = undefined;
 	shadows = [];
-	entities = [];
+	camera = undefined;
 	hurtTimer = undefined;
 	fighterDrawOrder = [0, 1];
 
 	constructor() {
 		this.stage = new KenStage();
+		this.entities = new EntityList();
+
 		this.overlays = [new StatusBar(this.fighters), new FpsCounter()];
 
 		this.startRound();
@@ -52,7 +56,11 @@ export class BattleScene {
 	getFighterEntity(fighterState, index) {
 		const FighterEntityClass = this.getFighterEntityClass(fighterState.id);
 
-		return new FighterEntityClass(index, this.handleAttackHit.bind(this));
+		return new FighterEntityClass(
+			index,
+			this.handleAttackHit.bind(this),
+			this.entities
+		);
 	}
 
 	getFighterEntities() {
@@ -64,19 +72,6 @@ export class BattleScene {
 		fighterEntities[1].opponent = fighterEntities[0];
 
 		return fighterEntities;
-	}
-
-	addEntity(EntityClass, ...args) {
-		this.entities.push(
-			new EntityClass(...args, this.removeEntity.bind(this))
-		);
-	}
-
-	removeEntity(entity) {
-		const index = this.entities.indexOf(entity);
-
-		if (index < 0) return;
-		this.entities.splice(index, 1);
 	}
 
 	getHitSplashClass(strength) {
@@ -107,8 +102,9 @@ export class BattleScene {
 		this.hurtTimer = time.previous + FIGHTER_HURT_DELAY * FRAME_TIME;
 
 		this.fighterDrawOrder = [playerId, opponentId];
+		if (!this.position) return;
 
-		this.addEntity(
+		this.entities.add(
 			this.getHitSplashClass(strength),
 			position.x,
 			position.y,
@@ -119,7 +115,7 @@ export class BattleScene {
 	startRound() {
 		this.fighters = this.getFighterEntities();
 		this.camera = new Camera(
-			STAGE_MID_POINT + STAGE_PADDING - 192,
+			STAGE_MID_POINT + STAGE_PADDING - SCREEN_WIDTH / 2,
 			16,
 			this.fighters
 		);
@@ -128,6 +124,8 @@ export class BattleScene {
 
 	updateFighters(time, context) {
 		for (const fighter of this.fighters) {
+			pollControl(time, fighter.playerId, fighter.direction);
+
 			if (time.previous < this.hurtTimer) {
 				fighter.updateHurtShake(time, this.hurtTimer);
 			} else {
@@ -142,12 +140,6 @@ export class BattleScene {
 		}
 	}
 
-	updateEntities(time, context) {
-		for (const entity of this.entities) {
-			entity.update(time, context, this.camera);
-		}
-	}
-
 	updateOverlays(time, context) {
 		for (const overlay of this.overlays) {
 			overlay.update(time, context, this.camera);
@@ -158,7 +150,7 @@ export class BattleScene {
 		this.updateFighters(time, context);
 		this.updateShadows(time, context);
 		this.stage.update(time);
-		this.updateEntities(time, context);
+		this.entities.update(time, context, this.camera);
 		this.camera.update(time, context);
 		this.updateOverlays(time, context);
 	}
@@ -175,12 +167,6 @@ export class BattleScene {
 		}
 	}
 
-	drawEntities(context) {
-		for (const entity of this.entities) {
-			entity.draw(context, this.camera);
-		}
-	}
-
 	drawOverlays(context) {
 		for (const overlay of this.overlays) {
 			overlay.draw(context, this.camera);
@@ -191,7 +177,7 @@ export class BattleScene {
 		this.stage.drawBackground(context, this.camera);
 		this.drawShadows(context);
 		this.drawFighters(context);
-		this.drawEntities(context);
+		this.entities.draw(context, this.camera);
 		this.stage.drawForeground(context, this.camera);
 		this.drawOverlays(context);
 	}

@@ -10,12 +10,28 @@ export class Shadow {
 		];
 	}
 
+	getScale() {
+		if (this.fighter.position.y !== STAGE_FLOOR) {
+			const airScale = 1 - (STAGE_FLOOR - this.fighter.position.y) / 250;
+
+			return [airScale, airScale];
+		} else if (this.fighter.states[this.fighter.currentState].shadow) {
+			const [scaleX, scaleY, offsetX, offsetY] =
+				this.fighter.states[this.fighter.currentState].shadow;
+
+			return [scaleX, scaleY, offsetX * -this.fighter.direction, offsetY];
+		}
+
+		return [1, 1];
+	}
+
 	update() {}
 
 	draw(context, camera) {
 		const [[x, y, width, height], [originX, originY]] = this.frame;
 
-		const scale = 1 - (STAGE_FLOOR - this.fighter.position.y) / 250;
+		const [scaleX = 1, scaleY = 1, offsetX = 0, offsetY = 0] =
+			this.getScale();
 
 		context.globalAlpha = 0.5;
 		context.drawImage(
@@ -25,11 +41,12 @@ export class Shadow {
 			width,
 			height,
 			Math.floor(
-				this.fighter.position.x - camera.position.x - originX * scale
-			),
-			Math.floor(STAGE_FLOOR - camera.position.y - originY * scale),
-			Math.floor(width * scale),
-			Math.floor(height * scale)
+				this.fighter.position.x - camera.position.x - originX * scaleX
+			) - offsetX,
+			Math.floor(STAGE_FLOOR - camera.position.y - originY * scaleY) -
+				offsetY,
+			Math.floor(width * scaleX),
+			Math.floor(height * scaleY)
 		);
 		context.globalAlpha = 1;
 	}

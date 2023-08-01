@@ -1,11 +1,13 @@
 import { FRAME_TIME } from '../../../constants/game.js';
 
 export class HitSplash {
-	constructor(x, y, playerId, onEnd) {
+	constructor(args, time, entityList) {
+      const [x, y, playerId] = args;
+
 		this.image = document.querySelector('img[alt="decals"]');
 		this.position = { x, y };
 		this.playerId = playerId;
-		this.onEnd = onEnd;
+		this.entityList = entityList;
 
 		this.frames = [];
 		this.animationFrame = -1;
@@ -18,7 +20,7 @@ export class HitSplash {
 		this.animationFrame++;
 		this.animationTimer = time.previous;
 
-		if (this.animationFrame >= 4) this.onEnd(this);
+		if (this.animationFrame >= 4) this.entityList.remove.call(this.entityList, this);
 	}
 
 	draw(context, camera) {

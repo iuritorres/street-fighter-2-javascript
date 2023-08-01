@@ -1,3 +1,5 @@
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../../constants/game.js';
+
 export class FpsCounter {
 	constructor() {
 		this.fps = 0;
@@ -11,6 +13,6 @@ export class FpsCounter {
 		context.font = '14px Arial';
 		context.fillStyle = '#00FF00';
 		context.textAlign = 'right';
-		context.fillText(`${this.fps}`, context.canvas.width - 2, context.canvas.height - 2);
+		context.fillText(`${this.fps}`, SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2);
 	}
 }

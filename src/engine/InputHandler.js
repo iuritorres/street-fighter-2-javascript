@@ -94,9 +94,10 @@ export function isKeyPressed(code) {
 
 // Gamepad press helper
 export const isButtonDown = (padId, button) =>
-	gamePads.get(padId)?.buttons[button].pressed;
+	gamePads.get(padId)?.buttons[button].pressed ?? false;
+
 export const isButtonUp = (padId, button) =>
-	!gamePads.get(padId)?.buttons[button].pressed;
+	!gamePads.get(padId)?.buttons[button].pressed ?? false;
 
 export function isButtonPressed(padId, button) {
 	const key = `${padId}-${button}`;

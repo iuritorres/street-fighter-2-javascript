@@ -31,6 +31,11 @@ export const FighterHurtBox = {
 	FEET: 'feet',
 };
 
+export const FighterHurtBy = {
+	FIGHTER: 'fighter',
+	FIREBALL: 'fireball',
+};
+
 export const FighterAttackBaseData = {
 	[FighterAttackStrength.LIGHT]: {
 		score: 100,
@@ -84,6 +89,7 @@ export const FighterState = {
 	HURT_BODY_LIGHT: 'hurt-body-light',
 	HURT_BODY_MEDIUM: 'hurt-body-medium',
 	HURT_BODY_HEAVY: 'hurt-body-heavy',
+	SPECIAL_1: 'special-1',
 };
 
 export const FrameDelay = {
@@ -143,6 +149,7 @@ export const HurtStateValidFrom = [
 	FighterState.WALK_FORWARD,
 	FighterState.JUMP_LAND,
 	FighterState.JUMP_START,
+	FighterState.JUMP_UP,
 	FighterState.IDLE_TURN,
 	FighterState.LIGHT_PUNCH,
 	FighterState.MEDIUM_PUNCH,
@@ -156,4 +163,22 @@ export const HurtStateValidFrom = [
 	FighterState.HURT_BODY_LIGHT,
 	FighterState.HURT_BODY_MEDIUM,
 	FighterState.HURT_BODY_HEAVY,
+	FighterState.SPECIAL_1,
 ];
+
+export const SpecialMoveDirection = {
+	BACKWARD: 'backward',
+	BACKWARD_UP: 'backward-up',
+	UP: 'up',
+	FORWARD_UP: 'forward-up',
+	FORWARD: 'forward',
+	FORWARD_DOWN: 'forward-down',
+	DOWN: 'down',
+	BACKWARD_DOWN: 'backward-down',
+	NONE: 'none',
+};
+
+export const SpecialMoveButton = {
+	ANY_PUNCH: 'any-punch',
+	ANY_KICK: 'any-kick',
+};
