@@ -4,4 +4,4 @@ Hi there! This repository contains a Street Fighter 2 game built using fundament
 
 I created this with the assistance of Shezzor's Dev Corner's game-making playlist on YouTube.
 
-I hope you find it enjoyable!: [Click to play](https://iuritorres.github.io/street-fighter-2-javascript/){:target="_blank"}
+I hope you find it enjoyable!: <a href="https://iuritorres.github.io/street-fighter-2-javascript/" target="_blank">Click to play</a>
