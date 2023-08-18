@@ -101,11 +101,12 @@ export class BattleScene {
 
 		this.hurtTimer = time.previous + FIGHTER_HURT_DELAY * FRAME_TIME;
 
-		this.fighterDrawOrder = [playerId, opponentId];
-		if (!this.position) return;
+		// this.fighterDrawOrder = [playerId, opponentId];
+		// if (!this.position) return;
 
 		this.entities.add(
 			this.getHitSplashClass(strength),
+         time,
 			position.x,
 			position.y,
 			playerId

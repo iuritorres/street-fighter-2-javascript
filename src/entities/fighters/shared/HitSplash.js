@@ -2,7 +2,7 @@ import { FRAME_TIME } from '../../../constants/game.js';
 
 export class HitSplash {
 	constructor(args, time, entityList) {
-      const [x, y, playerId] = args;
+		const [x, y, playerId] = args;
 
 		this.image = document.querySelector('img[alt="decals"]');
 		this.position = { x, y };

@@ -154,7 +154,7 @@ export class KenStage {
 	};
 
 	constructor() {
-		playSound(this.music, 0.03);
+		// playSound(this.music, 0.03);
 	}
 
 	updateBoat(time) {
