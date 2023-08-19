@@ -61,7 +61,7 @@ export function pollGamepads() {
 	for (const gamePad of navigator.getGamepads()) {
 		if (!gamePad) continue;
 
-		if (gamePad.has(gamePad.index)) {
+		if (gamePad.index) {
 			const { index, axes, buttons } = gamePad;
 
 			gamePads.set(index, { axes, buttons });
