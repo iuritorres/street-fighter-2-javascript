@@ -1,25 +1,25 @@
 import {
-	FighterAttackStrength,
-	FighterAttackType,
-	FighterHurtBox,
-	FighterHurtBy,
+    FighterAttackStrength,
+    FighterAttackType,
+    FighterHurtBox,
+    FighterHurtBy,
 } from '../../../constants/fighter.js';
 
 import {
-	FireballCollidedState,
-	FireballState,
-	FireballVelocity,
+    FireballCollidedState,
+    FireballState,
+    FireballVelocity,
 } from '../../../constants/fireball.js';
 
 import {
-	ENABLE_DEBUG,
-	FRAME_TIME,
-	SCREEN_WIDTH,
+    ENABLE_DEBUG,
+    FRAME_TIME,
+    SCREEN_WIDTH,
 } from '../../../constants/game.js';
 
 import {
-	boxOverlap,
-	getActualBoxDimensions,
+    boxOverlap,
+    getActualBoxDimensions,
 } from '../../../utils/collisions.js';
 
 import * as DEBUG from '../../../utils/entityDebug.js';
@@ -36,184 +36,184 @@ const frames = new Map([
 ]);
 
 const animations = {
-	[FireballState.ACTIVE]: [
-		['hadouken-fireball-1', 2],
-		['hadouken-fireball-3', 2],
-		['hadouken-fireball-2', 2],
-		['hadouken-fireball-3', 2],
-	],
-	[FireballState.COLLIDED]: [
-		['hadouken-collide-1', 9],
-		['hadouken-collide-2', 5],
-		['hadouken-collide-3', 9],
-	],
+    [FireballState.ACTIVE]: [
+        ['hadouken-fireball-1', 2],
+        ['hadouken-fireball-3', 2],
+        ['hadouken-fireball-2', 2],
+        ['hadouken-fireball-3', 2],
+    ],
+    [FireballState.COLLIDED]: [
+        ['hadouken-collide-1', 9],
+        ['hadouken-collide-2', 5],
+        ['hadouken-collide-3', 9],
+    ],
 };
 
 export class Fireball {
-	image = document.querySelector('img[alt="ken"]');
+    image = document.querySelector('img[alt="ken"]');
 
-	animationFrame = 0;
-	state = FireballState.ACTIVE;
+    animationFrame = 0;
+    state = FireballState.ACTIVE;
 
-	constructor(args, time, entityList) {
-		const [fighter, strength] = args;
+    constructor(args, time, entityList) {
+        const [fighter, strength] = args;
 
-		this.fighter = fighter;
-		this.entityList = entityList;
-		this.velocity = FireballVelocity[strength];
-		this.direction = this.fighter.direction;
-		this.position = {
-			x: this.fighter.position.x + 76 * this.direction,
-			y: this.fighter.position.y - 57,
-		};
-		this.animationTimer = time.previous;
-	}
+        this.fighter = fighter;
+        this.entityList = entityList;
+        this.velocity = FireballVelocity[strength];
+        this.direction = this.fighter.direction;
+        this.position = {
+            x: this.fighter.position.x + 76 * this.direction,
+            y: this.fighter.position.y - 57,
+        };
+        this.animationTimer = time.previous;
+    }
 
-	hasCollidedWithOpponent(hitbox) {
-		for (const [, hurtBox] of Object.entries(
-			this.fighter.opponent.boxes.hurt
-		)) {
-			const [x, y, width, height] = hurtBox;
+    hasCollidedWithOpponent(hitbox) {
+        for (const [, hurtBox] of Object.entries(
+            this.fighter.opponent.boxes.hurt
+        )) {
+            const [x, y, width, height] = hurtBox;
 
-			const actualOpponentHurtBox = getActualBoxDimensions(
-				this.fighter.opponent.position,
-				this.fighter.opponent.direction,
-				{ x, y, width, height }
-			);
+            const actualOpponentHurtBox = getActualBoxDimensions(
+                this.fighter.opponent.position,
+                this.fighter.opponent.direction,
+                { x, y, width, height }
+            );
 
-			if (boxOverlap(hitbox, actualOpponentHurtBox))
-				return FireballCollidedState.OPPONENT;
-		}
-	}
+            if (boxOverlap(hitbox, actualOpponentHurtBox))
+                return FireballCollidedState.OPPONENT;
+        }
+    }
 
-	hasCollidedWithOtherFireball(hitbox) {
-		const otherFireballs = this.entityList.entities.filter(
-			(fireball) => fireball instanceof Fireball && fireball !== this
-		);
+    hasCollidedWithOtherFireball(hitbox) {
+        const otherFireballs = this.entityList.entities.filter(
+            (fireball) => fireball instanceof Fireball && fireball !== this
+        );
 
-		if (otherFireballs.length === 0) return;
+        if (otherFireballs.length === 0) return;
 
-		for (const fireball of otherFireballs) {
-			const [x, y, width, height] = frames.get(
-				animations[fireball.state][fireball.animationFrame][0]
-			)[1];
+        for (const fireball of otherFireballs) {
+            const [x, y, width, height] = frames.get(
+                animations[fireball.state][fireball.animationFrame][0]
+            )[1];
 
-			const otherActualHitBox = getActualBoxDimensions(
-				fireball.position,
-				fireball.direction,
-				{ x, y, width, height }
-			);
+            const otherActualHitBox = getActualBoxDimensions(
+                fireball.position,
+                fireball.direction,
+                { x, y, width, height }
+            );
 
-			if (boxOverlap(hitbox, otherActualHitBox))
-				return FireballCollidedState.FIREBALL;
-		}
-	}
+            if (boxOverlap(hitbox, otherActualHitBox))
+                return FireballCollidedState.FIREBALL;
+        }
+    }
 
-	hasCollided() {
-		const [x, y, width, height] = frames.get(
-			animations[this.state][this.animationFrame][0]
-		)[1];
+    hasCollided() {
+        const [x, y, width, height] = frames.get(
+            animations[this.state][this.animationFrame][0]
+        )[1];
 
-		const actualHitBox = getActualBoxDimensions(
-			this.position,
-			this.direction,
-			{ x, y, width, height }
-		);
+        const actualHitBox = getActualBoxDimensions(
+            this.position,
+            this.direction,
+            { x, y, width, height }
+        );
 
-		return (
-			this.hasCollidedWithOpponent(actualHitBox) ??
-			this.hasCollidedWithOtherFireball(actualHitBox)
-		);
-	}
+        return (
+            this.hasCollidedWithOpponent(actualHitBox) ??
+            this.hasCollidedWithOtherFireball(actualHitBox)
+        );
+    }
 
-	updateMovement(time, camera) {
-		if (this.state !== FireballState.ACTIVE) return;
+    updateMovement(time, camera) {
+        if (this.state !== FireballState.ACTIVE) return;
 
-		this.position.x += this.velocity * this.direction * time.secondsPassed;
+        this.position.x += this.velocity * this.direction * time.secondsPassed;
 
-		if (
-			this.position.x - camera.position.x > SCREEN_WIDTH + 56 ||
-			this.position.x - camera.position.x < -56
-		) {
-			this.entityList.remove(this);
-		}
+        if (
+            this.position.x - camera.position.x > SCREEN_WIDTH + 56 ||
+            this.position.x - camera.position.x < -56
+        ) {
+            this.entityList.remove(this);
+        }
 
-		const hasCollided = this.hasCollided();
-		if (!hasCollided) return;
+        const hasCollided = this.hasCollided();
+        if (!hasCollided) return;
 
-		this.state = FireballState.COLLIDED;
-		this.animationFrame = 0;
-		this.animationTimer =
-			time.previous +
-			animations[this.state][this.animationFrame][1] * FRAME_TIME;
+        this.state = FireballState.COLLIDED;
+        this.animationFrame = 0;
+        this.animationTimer =
+            time.previous +
+            animations[this.state][this.animationFrame][1] * FRAME_TIME;
 
-		if (hasCollided !== FireballCollidedState.OPPONENT) return;
+        if (hasCollided !== FireballCollidedState.OPPONENT) return;
 
-		this.fighter.opponent.handleAttackHit(
-			time,
-			FighterAttackStrength.HEAVY,
-			FighterAttackType.PUNCH,
-			undefined,
-			FighterHurtBox.HEAD,
-			FighterHurtBy.FIREBALL
-		);
-	}
+        this.fighter.opponent.handleAttackHit(
+            time,
+            FighterAttackStrength.HEAVY,
+            FighterAttackType.PUNCH,
+            undefined,
+            FighterHurtBox.HEAD,
+            FighterHurtBy.FIREBALL
+        );
+    }
 
-	updateAnimation(time) {
-		if (time.previous < this.animationTimer) return;
+    updateAnimation(time) {
+        if (time.previous < this.animationTimer) return;
 
-		this.animationFrame += 1;
-		if (this.animationFrame >= animations[this.state].length) {
-			this.animationFrame = 0;
+        this.animationFrame += 1;
+        if (this.animationFrame >= animations[this.state].length) {
+            this.animationFrame = 0;
 
-			if (this.state === FireballState.COLLIDED)
-				this.entityList.remove(this);
-		}
+            if (this.state === FireballState.COLLIDED)
+                this.entityList.remove(this);
+        }
 
-		this.animationTimer =
-			time.previous +
-			animations[this.state][this.animationFrame][1] * FRAME_TIME;
-	}
+        this.animationTimer =
+            time.previous +
+            animations[this.state][this.animationFrame][1] * FRAME_TIME;
+    }
 
-	update(time, _, camera) {
-		this.updateMovement(time, camera);
-		this.updateAnimation(time);
-	}
+    update(time, _, camera) {
+        this.updateMovement(time, camera);
+        this.updateAnimation(time);
+    }
 
-	draw(context, camera) {
-		const [frameKey] = animations[this.state][this.animationFrame];
+    draw(context, camera) {
+        const [frameKey] = animations[this.state][this.animationFrame];
 
-		const [
-			[[frameX, frameY, frameWidth, frameHeight], [originX, originY]],
-			collisionDimensions,
-		] = frames.get(frameKey);
+        const [
+            [[frameX, frameY, frameWidth, frameHeight], [originX, originY]],
+            collisionDimensions,
+        ] = frames.get(frameKey);
 
-		context.scale(this.direction, 1);
-		context.drawImage(
-			this.image,
-			frameX,
-			frameY,
-			frameWidth,
-			frameHeight,
-			Math.floor(
-				(this.position.x - camera.position.x) * this.direction - originX
-			),
-			Math.floor(this.position.y - camera.position.y - originY),
-			frameWidth,
-			frameHeight
-		);
-		context.setTransform(1, 0, 0, 1, 0, 0);
+        context.scale(this.direction, 1);
+        context.drawImage(
+            this.image,
+            frameX,
+            frameY,
+            frameWidth,
+            frameHeight,
+            Math.floor(
+                (this.position.x - camera.position.x) * this.direction - originX
+            ),
+            Math.floor(this.position.y - camera.position.y - originY),
+            frameWidth,
+            frameHeight
+        );
+        context.setTransform(1, 0, 0, 1, 0, 0);
 
-		// DEBUG
-		if (!ENABLE_DEBUG) return;
-		DEBUG.drawBox(
-			context,
-			camera,
-			this.position,
-			this.direction,
-			collisionDimensions,
-			'#FF0000'
-		);
-		DEBUG.drawCross(context, camera, this.position, '#FFF');
-	}
+        // DEBUG
+        if (!ENABLE_DEBUG) return;
+        DEBUG.drawBox(
+            context,
+            camera,
+            this.position,
+            this.direction,
+            collisionDimensions,
+            '#FF0000'
+        );
+        DEBUG.drawCross(context, camera, this.position, '#FFF');
+    }
 }
