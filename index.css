@@ -1,26 +1,26 @@
 html,
 body {
-	margin: 0;
-	padding: 0;
-	height: 100%;
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 body {
-	display: flex;
+    display: flex;
 }
 
 body,
 canvas {
-	background-color: black;
+    background-color: black;
 }
 
 canvas {
-	width: 100%;
-	object-fit: contain;
-	image-rendering: crisp-edges;
-	image-rendering: pixelated;
+    width: 100%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: pixelated;
 }
 
 img {
-	display: none;
+    display: none;
 }

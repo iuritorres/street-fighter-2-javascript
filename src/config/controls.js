@@ -17,7 +17,7 @@ export const controls = [
             [Control.HEAVY_PUNCH]: 5,
             [Control.LIGHT_KICK]: 0,
             [Control.MEDIUM_KICK]: 1,
-            [Control.HEAVY_KICK]: 4,
+            [Control.HEAVY_KICK]: 7,
         },
         keyboard: {
             [Control.LEFT]: 'KeyZ',
@@ -48,7 +48,7 @@ export const controls = [
             [Control.HEAVY_PUNCH]: 5,
             [Control.LIGHT_KICK]: 0,
             [Control.MEDIUM_KICK]: 1,
-            [Control.HEAVY_KICK]: 4,
+            [Control.HEAVY_KICK]: 7,
         },
         keyboard: {
             [Control.LEFT]: 'ArrowLeft',
